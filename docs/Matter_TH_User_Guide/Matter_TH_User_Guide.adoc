@@ -167,6 +167,7 @@ endif::[]
                                                                      * Updated Python Test Logging Configuration section to document the `th_config.enable_realtime_python_test_logs` per-project override. +
                                                                      * Documented the `--prompt-timeout` CLI flag for `run-tests`.
 | 71          | 03-Sep-2026  | [Apple]Romulo Quidute               | * Updated Section 7.1 to use the current standalone nRF Util executable instead of the deprecated pip-based nrfutil package, and to clarify RCP dongle flashing can be done from a separate Mac/PC.
+| 72          | 04-Sep-2026  | [Apple]Antonio Melo Jr.             | * Updated Container Logging Configuration section to document the `th_config.enable_container_logs` per-project override (issue #1091).
 |===
 
 <<<
@@ -1459,7 +1460,8 @@ image:images/img_15.png[]
   },
   "th_config": {
     "prompt_timeout_seconds": 60,
-    "enable_realtime_python_test_logs": null
+    "enable_realtime_python_test_logs": null,
+    "enable_container_logs": null
   }
 }
 ----
@@ -2290,14 +2292,28 @@ ENABLE_REALTIME_PYTHON_TEST_LOGS=False
 +
 Changing this variable requires recreating the backend container — see the note at the end of this section.
 
+[#container-logging-configuration]
 ===== Container Logging Configuration
 The TH supports optional logging of container operations for debugging and troubleshooting purposes:
 
 * *Container logging disabled (default)*: No container operation logs are displayed
 * *Container logging enabled*: Displays detailed Docker container operations including creation, destruction, and file copy operations
 
-To configure container logging, add or update the `ENABLE_CONTAINER_LOGS` environment variable in the same `certification-tool/.env` file:
+The logging mode can be configured in two ways, listed in the order they are checked:
 
+. *Per-project override (recommended)*: Set `th_config.enable_container_logs` in the project's configuration (see <<user-prompt-timeout-configuration, User Prompt Timeout Configuration>> for where `th_config` lives in the project JSON). This takes effect immediately on the next test run — no container restart needed:
++
+[source,xml]
+----
+"th_config": {
+  "enable_container_logs": true
+}
+----
++
+Set it to `false` to force container logging off for that project regardless of the instance-wide default below, or leave it `null`/omit the key to defer to that default.
+
+. *Instance-wide default (environment variable)*: If `th_config.enable_container_logs` is `null` or not set for a project, the TH falls back to the `ENABLE_CONTAINER_LOGS` environment variable in the same `certification-tool/.env` file:
++
 [source,shell]
 ----
 # Enable container logging
@@ -2306,6 +2322,8 @@ ENABLE_CONTAINER_LOGS=True
 # Disable container logging (default)
 ENABLE_CONTAINER_LOGS=False
 ----
++
+Changing this variable requires recreating the backend container — see the note at the end of this section.
 
 When enabled, the following container information will be logged:
 
@@ -2330,12 +2348,14 @@ This timeout is configurable per project via a `th_config` object in the project
 ----
 "th_config": {
   "prompt_timeout_seconds": 60,
-  "enable_realtime_python_test_logs": null
+  "enable_realtime_python_test_logs": null,
+  "enable_container_logs": null
 }
 ----
 
 * `prompt_timeout_seconds`: how long, in seconds, the operator has to respond to a user prompt before it times out. Increase this if a test step requires the operator to read output and take a manual action that takes longer than the default 60 seconds.
 * `enable_realtime_python_test_logs`: the per-project override for Python test log display described in <<python-test-logging-configuration,Python Test Logging Configuration>> above.
+* `enable_container_logs`: the per-project override for Docker container operation logging described in <<container-logging-configuration,Container Logging Configuration>> above.
 
 NOTE: `th_config.prompt_timeout_seconds` controls the interactive user-prompt timeout. It is unrelated to `test_parameters.timeout`, which controls the chip-tool/Python test *execution* timeout (see the "Overwrite the default timeout" step under Project Configuration, above) — the two settings sit close together in the same JSON file but govern different things.
 
