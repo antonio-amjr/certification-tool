@@ -61,6 +61,10 @@ services:
       placement:
         constraints:
           - node.role == manager
+      resources:
+        limits:
+          cpus: '${PROXY_CPU_LIMIT:-0.25}'        # If no environment variables is provided, cap at 0.25 cores
+          memory: '${PROXY_MEMORY_LIMIT:-128M}'   # If no environment variables is provided, cap at 128 MB
 
   db:
     image: postgres:12
@@ -76,6 +80,10 @@ services:
       placement:
         constraints:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+      resources:
+        limits:
+          cpus: '${DB_CPU_LIMIT:-0.5}'        # If no environment variables is provided, cap at 0.5 cores
+          memory: '${DB_MEMORY_LIMIT:-384M}'  # If no environment variables is provided, cap at 384 MB
 
   backend:
     image: 'ghcr.io/project-chip/csa-certification-tool-backend:16a190f'
@@ -115,6 +123,11 @@ services:
     image: 'ghcr.io/project-chip/csa-certification-tool-frontend:10d1822'
     build:
       context: ./frontend
+    deploy:
+      resources:
+        limits:
+          cpus: '${FRONTEND_CPU_LIMIT:-0.75}'        # If no environment variables is provided, cap at 0.75 cores
+          memory: '${FRONTEND_MEMORY_LIMIT:-700M}'   # If no environment variables is provided, cap at 700 MB
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
