@@ -63,7 +63,7 @@ services:
           - node.role == manager
       resources:
         limits:
-          cpus: '${PROXY_CPU_LIMIT:-0.25}'        # If no environment variables is provided, cap at 0.25 cores
+          cpus: '${PROXY_CPU_LIMIT:-0.2}'        # If no environment variables is provided, cap at 0.2 cores
           memory: '${PROXY_MEMORY_LIMIT:-128M}'   # If no environment variables is provided, cap at 128 MB
 
   db:
@@ -82,7 +82,7 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
       resources:
         limits:
-          cpus: '${DB_CPU_LIMIT:-0.5}'        # If no environment variables is provided, cap at 0.5 cores
+          cpus: '${DB_CPU_LIMIT:-0.3}'        # If no environment variables is provided, cap at 0.3 cores
           memory: '${DB_MEMORY_LIMIT:-384M}'  # If no environment variables is provided, cap at 384 MB
 
   backend:
@@ -126,7 +126,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '${FRONTEND_CPU_LIMIT:-0.75}'        # If no environment variables is provided, cap at 0.75 cores
+          cpus: '${FRONTEND_CPU_LIMIT:-0.5}'        # If no environment variables is provided, cap at 0.5 cores
           memory: '${FRONTEND_MEMORY_LIMIT:-700M}'   # If no environment variables is provided, cap at 700 MB
     labels:
       - traefik.enable=true

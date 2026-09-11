@@ -2366,17 +2366,19 @@ BACKEND_CPU_LIMIT=2.5
 BACKEND_MEMORY_LIMIT=2000M
 
 # Frontend
-FRONTEND_CPU_LIMIT=0.75
+FRONTEND_CPU_LIMIT=0.5
 FRONTEND_MEMORY_LIMIT=700M
 
 # Database
-DB_CPU_LIMIT=0.5
+DB_CPU_LIMIT=0.3
 DB_MEMORY_LIMIT=384M
 
 # Proxy
-PROXY_CPU_LIMIT=0.25
+PROXY_CPU_LIMIT=0.2
 PROXY_MEMORY_LIMIT=128M
 ----
+
+The CPU defaults above sum to 3.5 of the 4 physical cores on a Raspberry Pi 4, leaving 0.5 cores (12.5%) of headroom for the host OS even if every container simultaneously peaks.
 
 Changing these variables requires recreating the affected container(s) — see the note at the end of the <<container-logging-configuration,Container Logging Configuration>> section above for how to do this with `docker compose up`.
 
